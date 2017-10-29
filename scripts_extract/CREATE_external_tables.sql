@@ -61,15 +61,15 @@ ORGANIZATION EXTERNAL
     ACCESS PARAMETERS
     (
         RECORDS DELIMITED BY newline
+        --LOAD WHEN (area_cientifica != null AND departamento != null)
         BADFILE 'curso_ei_proj63.bad'
         DISCARDFILE 'curso_ei_proj63.dis'
         LOGFILE 'curso_ei_proj63.log'
         SKIP 3
-        FIELDS TERMINATED BY ";" OPTIONALLY ENCLOSED BY '"'
-        REJECT ROWS WITH ALL NULL FIELDS
+        FIELDS TERMINATED BY ";" OPTIONALLY ENCLOSED BY '"' MISSING FIELD VALUES ARE NULL
         (
-            uc          CHAR(100),
-            area_cientifica     CHAR(10),
+            uc                          CHAR(100),
+            area_cientifica       CHAR(10),
             departamento        CHAR(10)
         )
     )
