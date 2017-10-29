@@ -68,8 +68,8 @@ ORGANIZATION EXTERNAL
         SKIP 3
         FIELDS TERMINATED BY ";" OPTIONALLY ENCLOSED BY '"' MISSING FIELD VALUES ARE NULL
         (
-            uc                          CHAR(100),
-            area_cientifica       CHAR(10),
+            uc                  CHAR(100),
+            area_cientifica     CHAR(10),
             departamento        CHAR(10)
         )
     )
