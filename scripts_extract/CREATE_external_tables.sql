@@ -4,35 +4,6 @@ CREATE TABLE t_ext_area_cientifica(
 )
 ORGANIZATION EXTERNAL
 (
-<<<<<<< HEAD
-	TYPE oracle_loader
-	DEFAULT DIRECTORY EI_SAD_PROJ63
-	ACCESS PARAMETERS
-	(
-		RECORDS DELIMITED BY newline
-		BADFILE 'stores.bad'
-		DISCARDFILE 'stores.dis'
-		LOGFILE 'stores.log'
-		SKIP 6
-		FIELDS TERMINATED BY ";" OPTIONALLY ENCLOSED BY '"' MISSING FIELD VALUES ARE NULL
-		(
-			refer		CHAR(6),
-			phone_nrs	CHAR(50),
-			fax_nr		CHAR(50),
-			name		CHAR(100),
-			address		CHAR(250),
-			zip_code	CHAR(8),
-			city		CHAR(100),
-			nr_of_employees	CHAR,
-			building	CHAR(250),
-			hours		CHAR,
-			district	CHAR(100),
-			opening_date	DATE 'dd-mm-yyyy',
-			closure_date	DATE 'dd-mm-yyyy'
-		)
-	)
-	LOCATION ('stores.csv')
-=======
     TYPE oracle_loader
     DEFAULT DIRECTORY EI_SAD_PROJ63
     ACCESS PARAMETERS
@@ -42,15 +13,13 @@ ORGANIZATION EXTERNAL
         DISCARDFILE 'area_cientifica_proj63.dis'
         LOGFILE 'area_cientifica_proj63.log'
         SKIP 1
-        FIELDS TERMINATED BY ";" OPTIONALLY ENCLOSED BY '"'
-        MISSING FIELD VALUES ARE NULL
+        FIELDS TERMINATED BY ";" OPTIONALLY ENCLOSED BY '"' MISSING FIELD VALUES ARE NULL
         (
             name        CHAR(50),
             sigla       CHAR(10)
         )
     )
     LOCATION ('Areas_Cientificas.csv')
->>>>>>> 3a1d4a94b1df074fa2dafec5183a6e995575f29a
 )
 REJECT LIMIT UNLIMITED;
  
@@ -81,7 +50,7 @@ ORGANIZATION EXTERNAL
 REJECT LIMIT UNLIMITED;
  
 CREATE TABLE t_ext_curso_ei(
-    uc          VARCHAR2(100),
+    uc                  VARCHAR2(100),
     area_cientifica     VARCHAR2(10),
     departamento        VARCHAR2(10)
 )
