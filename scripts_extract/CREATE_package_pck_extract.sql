@@ -1,10 +1,3 @@
-CREATE OR REPLACE PACKAGE pck_extract IS
-   PROCEDURE main (p_initialize BOOLEAN);
-   PROCEDURE read_file(p_dir VARCHAR2, p_file_name VARCHAR2);
-END pck_extract;
-
-/
-
 create or replace PACKAGE BODY pck_extract IS
 
    e_extraction EXCEPTION;
@@ -68,10 +61,12 @@ create or replace PACKAGE BODY pck_extract IS
             pck_log.write_log('      Done!');
 
             pck_log.write_log('    Deleting %_new and %_old data');
-            -- DELETE FROM t_data_managers_new;
-            -- DELETE FROM t_data_managers_old;
-            -- DELETE FROM t_data_stores_new;
-            -- DELETE FROM t_data_stores_old;
+            DELETE FROM t_data_area_cientifica_new;
+            DELETE FROM t_data_area_cientifica_old; 
+            DELETE FROM t_data_departamentos_new;
+            DELETE FROM t_data_departamentos_old;
+            --DELETE FROM t_data_curso_ei_new;
+            --DELETE FROM t_data_curso_ei_old;
             pck_log.write_log('      Done!');
          END IF;
       EXCEPTION
@@ -79,26 +74,40 @@ create or replace PACKAGE BODY pck_extract IS
          pck_log.write_uncomplete_task_msg;
             RAISE e_extraction;
       END;
-
-      -- v_source_table:='view_produtos@DBLINK_SADSB';
-      -- INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
-      -- v_source_table:='view_promocoes@DBLINK_SADSB';
-      -- INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
-      -- v_source_table:='view_vendas@DBLINK_SADSB';
-      -- INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
-      -- v_source_table:='view_linhasvenda@DBLINK_SADSB';
-      -- INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
-      -- v_source_table:='view_linhasvenda_promocoes@DBLINK_SADSB';
-      -- INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
+      
+       v_source_table:='ei_sad_proj_gisem.v_ucs';
+      INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
+       v_source_table:='ei_sad_proj_gisem.v_turno_user';
+      INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
+       v_source_table:='ei_sad_proj_gisem.v_users';
+      INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
+       v_source_table:='ei_sad_proj_gisem.v_uc_user';
+      INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
+       v_source_table:='ei_sad_proj_gisem.v_turnos';
+      INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
+       v_source_table:='ei_sad_proj_gisem.v_turma_turno';
+      INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
+       v_source_table:='ei_sad_proj_gisem.v_turmas';
+      INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
+       v_source_table:='ei_sad_proj_gisem.v_trocas_turma';
+      INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
+       v_source_table:='ei_sad_proj_gisem.v_trocas';
+      INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
+       v_source_table:='ei_sad_proj_gisem.v_settings';
+      INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
+       v_source_table:='ei_sad_proj_gisem.v_presencas';
+      INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
+       v_source_table:='ei_sad_proj_gisem.v_aulas_semana';
+      INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
+       v_source_table:='ei_sad_proj_gisem.v_aulas';
+      INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
+      
       pck_log.write_log('    Done!');
    EXCEPTION
       WHEN OTHERS THEN
          pck_log.write_uncomplete_task_msg;
          RAISE e_extraction;
    END;
-
-
-
 
 
    -- ********************************************************************
@@ -138,10 +147,10 @@ create or replace PACKAGE BODY pck_extract IS
              pck_log.write_log(v_sql);
 
              EXECUTE IMMEDIATE v_sql INTO v_end_date;
-             
+
             -- EXTRACT ALL RELEVANT RECORDS FROM THE SOURCE TABLE TO THE DSA
             -- SOMETHING IS MISSING
-            v_sql := 'INSERT INTO '|| p_DSA_table ||'('||p_attributes_dest||') SELECT '|| p_attributes_src||' FROM '|| p_source_table || ' WHERE src_last_changed<= :1'; 
+            v_sql := 'INSERT INTO '|| p_DSA_table ||'('||p_attributes_dest||') SELECT '|| p_attributes_src||' FROM '|| p_source_table || ' WHERE src_last_changed<= :1 OR src_last_changed IS null'; 
             pck_log.write_log(v_sql);
             EXECUTE IMMEDIATE v_sql USING v_end_date;
 
@@ -158,7 +167,7 @@ create or replace PACKAGE BODY pck_extract IS
             -- FIND THE DATE OF CHANGE OF THE MOST RECENTLY CHANGED RECORD IN THE SOURCE TABLE
              v_sql:='SELECT MAX(src_last_changed) FROM '|| p_source_table || 'WHERE src_last_changed>=:1';
              pck_log.write_log(v_sql);
-            
+
             EXECUTE IMMEDIATE v_sql INTO v_end_date USING v_start_date;
 
             IF v_end_date>v_start_date THEN
@@ -166,7 +175,7 @@ create or replace PACKAGE BODY pck_extract IS
                -- SOMETHING IS MISSING
                  v_sql := 'INSERT INTO '|| p_DSA_table ||'('||p_attributes_dest||') SELECT '|| p_attributes_src||' FROM '|| p_source_table || ' WHERE src_last_changed<= :2 AND src_last_changed>=:1'; 
                 pck_log.write_log(v_sql);
-               
+
 
                EXECUTE IMMEDIATE v_sql USING v_start_date, v_end_date;
 
@@ -174,7 +183,7 @@ create or replace PACKAGE BODY pck_extract IS
             'WHERE UPPER(source_table_name)='''||UPPER(p_source_table)||'''';
              pck_log.write_log(v_sql);
             EXECUTE IMMEDIATE v_sql USING v_end_date;
-            
+
             END IF;
          END IF;
 
@@ -214,12 +223,12 @@ create or replace PACKAGE BODY pck_extract IS
       v_sql := 'INSERT INTO ' || p_dsa_table_old || ' ('|| p_attributes_dest || ') SELECT ' || p_attributes_dest || ' FROM ' || p_dsa_table_new;
       pck_log.write_log(v_sql);
       EXECUTE IMMEDIATE v_sql;
-      
+
       -- 3º Operação = limpar tabela NEW
       v_sql := 'DELETE FROM '||p_dsa_table_new;
       pck_log.write_log(v_sql);
       EXECUTE IMMEDIATE v_sql;
-      
+
       -- 4º Operação = extrair dados do ficheiro
       v_sql := 'INSERT INTO ' || p_dsa_table_new || ' ('|| p_attributes_dest || ') SELECT ' || p_attributes_src || ' FROM ' || p_external_table;
       pck_log.write_log(v_sql);
@@ -287,19 +296,31 @@ create or replace PACKAGE BODY pck_extract IS
      --  table_extract('view_linhasvenda@dblink_sadsb', 't_data_linesofsale', 'src_id,src_sale_id,src_product_id,src_quantity,src_ammount_paid,src_line_date', 'id,sale_id,product_id,quantity,ammount_paid,line_date');
      --  table_extract('view_promocoes@dblink_sadsb', 't_data_promotions','src_id,src_name,src_start_date,src_end_date,src_reduction,src_on_outdoor,src_on_tv','id,name,start_date,end_date,reduction,on_outdoor,on_tv');
      --  table_extract('view_linhasvenda_promocoes@dblink_sadsb', 't_data_linesofsalepromotions','src_line_id,src_promo_id','line_id,promo_id');
-     --  table_extract('view_vendas@dblink_sadsb','t_data_sales','src_id,src_sale_date,src_store_id','id,sale_date,store_id');
-
+     table_extract('ei_sad_proj_gisem.v_ucs','t_data_ucs','id,nomeuc,abrevuc,anouc,semestreuc,ramouc,src_last_changed','id,nomeuc,abrevuc,anouc,semestreuc,ramouc,src_last_changed');
+    table_extract('ei_sad_proj_gisem.v_turno_user','t_data_turno_user','user_id,turno_id,src_last_changed','user_id,turno_id,src_last_changed');
+    table_extract('ei_sad_proj_gisem.v_users','t_data_users','created_at,remember_token,turma_id,temporario,hashorariocompleto,preferencia,ramo,regime,role,id','created_at,remember_token,turma_id,temporario,hashorariocompleto,preferencia,ramo,regime,role,id');
+    table_extract('ei_sad_proj_gisem.v_uc_user','t_data_uc_users','user_id,uc_id','user_id,uc_id');
+    table_extract('ei_sad_proj_gisem.v_turnos','t_data_turnos','id,anolectivo,nomeuc,regimeuc,abrevuc,anouc,semestreuc,ramouc,turnouc,max_alunos,tipoturno,uc_id,src_last_changed','id,anolectivo,nomeuc,regimeuc,abrevuc,anouc,semestreuc,ramouc,turnouc,max_alunos,tipoturno,uc_id,src_last_changed'); 
+    table_extract('ei_sad_proj_gisem.v_turma_turno','t_data_turma_turno','turma_id,turno_id,src_last_changed','turma_id,turno_id,src_last_changed'); 
+    table_extract('ei_sad_proj_gisem.v_turmas','t_data_turmas','id,anolectivo,semestre,nome,descricao,numestudantes,ramo,src_last_changed','id,anolectivo,semestre,nome,descricao,numestudantes,ramo,src_last_changed');
+    table_extract('ei_sad_proj_gisem.v_trocas_turma','t_data_trocas_turmas','id,anolectivo,semestre,user_sender,turma_id_pretendida,estadotroca,trocaglobal,created_at,src_last_changed','id,anolectivo,semestre,user_sender,turma_id_pretendida,estadotroca,trocaglobal,created_at,src_last_changed');
+    table_extract('ei_sad_proj_gisem.v_trocas','t_data_trocas','id,anolectivo,semestre,user_sender,turno_id_corrente,user_receiver,turno_id_pretendido,estadotroca,trocaglobal,created_at,src_last_changed','id,anolectivo,semestre,user_sender,turno_id_corrente,user_receiver,turno_id_pretendido,estadotroca,trocaglobal,created_at,src_last_changed');
+    table_extract('ei_sad_proj_gisem.v_settings','t_data_settings','id,anolectivo,semestre,permitirtrocas,src_last_changed','id,anolectivo,semestre,permitirtrocas,src_last_changed');
+    table_extract('ei_sad_proj_gisem.v_presencas','t_data_presencas','id,aula_semana_id,user_id,presente,src_last_changed','id,aula_semana_id,user_id,presente,src_last_changed');
+    table_extract('ei_sad_proj_gisem.v_aulas_semana','t_data_aulas_semana','id,semana,diasemana,horainicio,horafim,sala,dia,mes,ano_civil,turno_id,prof_id,marcou_presenca,num_presencas,aula_cancelada,src_last_changed','id,semana,diasemana,horainicio,horafim,sala,dia,mes,ano_civil,turno_id,prof_id,marcou_presenca,num_presencas,aula_cancelada,src_last_changed');
+     table_extract('ei_sad_proj_gisem.v_aulas','t_data_aulas','id,diasemana,horainicio,horafim,sala,semanas,professor,turno_id,src_last_changed','id,diasemana,horainicio,horafim,sala,semanas,professor,turno_id,src_last_changed');
+     
      --  table_extract_non_incremental('view_categorias@dblink_sadsb', 't_data_categories', 'src_id,src_name', 'id,name');
 
       -- SOMETHING IS MISSING: maybe... a file extraction
       --file_extract ('t_ext_stores', 'name,refer,building,address,zip_code,city,district,phone_nrs,fax_nr,closure_date',
       --               'name,reference,building,address,zip_code,location,district,telephones,fax,closure_date','t_data_stores_new', 't_data_stores_old');
-                     
+
       --file_extract ('t_ext_managers', 'refer,store_manager_name,store_manager_since', 'reference,manager_name,manager_since', 't_data_managers_new', 't_data_managers_old');
 
      file_extract('t_ext_area_cientifica','name,sigla','name,sigla','t_data_area_cientifica_new','t_data_area_cientifica_old');
      file_extract('t_ext_departamentos','name,sigla','name,sigla','t_data_departamentos_new','t_data_departamentos_old');
-     file_extract('t_ext_curso_ei','uc,area_cientifica,departamento','uc,area_cientifica,departamento','t_data_curso_ei_new','t_data_curso_ei_old');
+     --file_extract('t_ext_curso_ei','uc,area_cientifica,departamento','uc,area_cientifica,departamento','t_data_curso_ei_new','t_data_curso_ei_old');
 
       COMMIT;
       pck_log.write_log('  All extracted data commited to database.');
