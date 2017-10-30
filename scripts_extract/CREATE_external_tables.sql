@@ -61,7 +61,7 @@ ORGANIZATION EXTERNAL
     ACCESS PARAMETERS
     (
         RECORDS DELIMITED BY newline
-        --LOAD WHEN (area_cientifica != null AND departamento != null)
+        LOAD WHEN (area_cientifica != BLANKS AND departamento != BLANKS)
         BADFILE 'curso_ei_proj63.bad'
         DISCARDFILE 'curso_ei_proj63.dis'
         LOGFILE 'curso_ei_proj63.log'
