@@ -151,18 +151,33 @@ GROUP BY departamento, nomeuc
 ORDER BY 1;
 
 --  2.6
-SELECT turnoUc, MIN(numPresencas), MAX(numPresencas)
-FROM (SELECT t.turnouc AS turnoUc, aulas.num_presencas AS numPresencas
-        FROM ei_sad_proj_gisem.v_turnos t JOIN ei_sad_proj_gisem.v_aulas_semana aulas ON (t.id = aulas.turno_id)
-        WHERE t.uc_id = 229)
-GROUP BY turnoUc
-ORDER BY 1
-;
+SELECT dia || '/' || mes || '/' || ano AS "DATA"
+FROM (SELECT aulas.dia AS dia, aulas.mes AS mes,
+                        aulas.ano_civil AS ano,
+                        sum(num_presencas) AS presencas
+            FROM ei_sad_proj_gisem.v_aulas_semana aulas
+            GROUP BY aulas.dia, aulas.mes, aulas.ano_civil)
+WHERE 
+                    (presencas / (SELECT ROUND(AVG(sum(num_presencas)),2)
+                    FROM ei_sad_proj_gisem.v_aulas_semana
+                    GROUP BY dia, mes, ano_civil) )> 1.75
+                    OR
+                    (presencas / (SELECT ROUND(AVG(sum(num_presencas)),2)
+                    FROM ei_sad_proj_gisem.v_aulas_semana
+                    GROUP BY dia, mes, ano_civil) )<0.25
+ORDER BY 1;
 
-SELECT aula.dia, ROUND(AVG(cont),2)
-FROM (SELECT t.id AS turnoId, t.turnouc , count(*) AS cont
-        FROM ei_sad_proj_gisem.v_turnos t
-            JOIN ei_sad_proj_gisem.v_turno_user tu ON (t.id = tu.turno_id)
-        GROUP BY t.id, t.turnouc) tuc
-        JOIN ei_sad_proj_gisem.v_aulas_semana aulas ON (tuc.turnoId = aulas.turno_id)
-GROUP BY aula.dia;
+WITH mediaPresencasTotal (media) AS
+     (SELECT ROUND(AVG(sum(num_presencas)),2)
+                    FROM ei_sad_proj_gisem.v_aulas_semana
+                    GROUP BY dia, mes, ano_civil)
+SELECT dia || '/' || mes || '/' || ano AS "DATA"
+FROM (SELECT aulas.dia AS dia, aulas.mes AS mes,
+                        aulas.ano_civil AS ano,
+                        sum(num_presencas) AS presencas
+            FROM ei_sad_proj_gisem.v_aulas_semana aulas
+            GROUP BY aulas.dia, aulas.mes, aulas.ano_civil)
+WHERE 
+                    (presencas / (SELECT media FROM mediaPresencasTotal) )> 1.75
+                    OR
+                    (presencas / (SELECT media FROM mediaPresencasTotal) )<0.25;
