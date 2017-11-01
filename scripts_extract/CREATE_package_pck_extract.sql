@@ -1,4 +1,13 @@
-create or replace PACKAGE BODY pck_extract IS
+CREATE OR REPLACE PACKAGE pck_extract IS
+   PROCEDURE main (p_initialize BOOLEAN);
+   PROCEDURE read_file(p_dir VARCHAR2, p_file_name VARCHAR2);
+END pck_extract;
+
+/
+
+
+create or replace
+PACKAGE BODY pck_extract IS
 
    e_extraction EXCEPTION;
 
@@ -65,8 +74,8 @@ create or replace PACKAGE BODY pck_extract IS
             DELETE FROM t_data_area_cientifica_old; 
             DELETE FROM t_data_departamentos_new;
             DELETE FROM t_data_departamentos_old;
-            --DELETE FROM t_data_curso_ei_new;
-            --DELETE FROM t_data_curso_ei_old;
+            DELETE FROM t_data_curso_ei_new;
+            DELETE FROM t_data_curso_ei_old;
             pck_log.write_log('      Done!');
          END IF;
       EXCEPTION
@@ -320,7 +329,7 @@ create or replace PACKAGE BODY pck_extract IS
 
      file_extract('t_ext_area_cientifica','name,sigla','name,sigla','t_data_area_cientifica_new','t_data_area_cientifica_old');
      file_extract('t_ext_departamentos','name,sigla','name,sigla','t_data_departamentos_new','t_data_departamentos_old');
-     --file_extract('t_ext_curso_ei','uc,area_cientifica,departamento','uc,area_cientifica,departamento','t_data_curso_ei_new','t_data_curso_ei_old');
+     file_extract('t_ext_curso_ei','uc,area_cientifica,departamento','uc,area_cientifica,departamento','t_data_curso_ei_new','t_data_curso_ei_old');
 
       COMMIT;
       pck_log.write_log('  All extracted data commited to database.');
