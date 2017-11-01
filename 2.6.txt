@@ -1,0 +1,30 @@
+SELECT aulas.dia AS dia, aulas.mes AS mes,aulas.ano_civil AS ano, sum(num_presencas) AS presencas
+FROM ei_sad_proj_gisem.v_aulas_semana aulas
+GROUP BY aulas.dia, aulas.mes, aulas.ano_civil
+HAVING sum(num_presencas) < (SELECT AVG(sum(num_presencas)) as avge
+                    FROM ei_sad_proj_gisem.v_aulas_semana
+                    GROUP BY dia, mes, ano_civil);
+
+
+
+
+
+---------------------
+
+
+
+
+SELECT aulas.dia AS dia, aulas.mes AS mes,aulas.ano_civil AS ano, sum(num_presencas) AS presencas
+FROM ei_sad_proj_gisem.v_aulas_semana aulas
+GROUP BY aulas.dia, aulas.mes, aulas.ano_civil
+HAVING sum(num_presencas) < (SELECT AVG(sum(num_presencas))
+                    FROM ei_sad_proj_gisem.v_aulas_semana
+                    GROUP BY dia, mes, ano_civil);
+                      
+SELECT  aulas.dia AS dia, aulas.mes AS mes,aulas.ano_civil AS ano, ROUND(sum(num_presencas)/(SELECT sum(num_presencas)
+                                                                                            FROM ei_sad_proj_gisem.v_aulas_semana),2) AS presencas
+FROM ei_sad_proj_gisem.v_aulas_semana aulas
+GROUP BY aulas.dia, aulas.mes, aulas.ano_civil
+HAVING sum(num_presencas) < (SELECT AVG(sum(num_presencas))
+                    FROM ei_sad_proj_gisem.v_aulas_semana
+                    GROUP BY dia, mes, ano_civil);

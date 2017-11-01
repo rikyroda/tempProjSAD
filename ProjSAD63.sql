@@ -158,3 +158,11 @@ FROM (SELECT t.turnouc AS turnoUc, aulas.num_presencas AS numPresencas
 GROUP BY turnoUc
 ORDER BY 1
 ;
+
+SELECT aula.dia, ROUND(AVG(cont),2)
+FROM (SELECT t.id AS turnoId, t.turnouc , count(*) AS cont
+        FROM ei_sad_proj_gisem.v_turnos t
+            JOIN ei_sad_proj_gisem.v_turno_user tu ON (t.id = tu.turno_id)
+        GROUP BY t.id, t.turnouc) tuc
+        JOIN ei_sad_proj_gisem.v_aulas_semana aulas ON (tuc.turnoId = aulas.turno_id)
+GROUP BY aula.dia;
