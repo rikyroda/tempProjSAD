@@ -1,4 +1,4 @@
-
+﻿
 --Q1.1 : Nº Turnos por Tipo na UC SAD 
 SELECT u.nomeuc AS UC, t.tipoturno AS "Tipo de Turno", count(*) AS "Numero de Turnos"
 FROM ei_sad_proj_gisem.v_turnos t

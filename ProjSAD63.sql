@@ -2,7 +2,7 @@ SELECT * FROM t_ext_curso_ei;
 SELECT * FROM t_ext_area_cientifica;
 SELECT * FROM t_ext_departamentos;
 
-SELECT * FROM ei_sad_proj_gisem.v_turnos;
+SELECT nome FROM ei_sad_proj_gisem.v_turnos;
 
 SELECT *
 FROM t_ext_curso_ei ce JOIN t_ext_area_cientifica ac ON (ce.area_cientifica LIKE '%' || ac.sigla || '%');
@@ -26,6 +26,12 @@ SELECT ce.uc, ce.area_cientifica, t.tipoturno, count(*)
 FROM ei_sad_proj_gisem.v_turnos t
 	JOIN t_ext_curso_ei ce ON (ce.uc LIKE t.nomeuc || '%')
 GROUP BY ce.uc, t.tipoturno,ce.area_cientifica;
+
+SELECT t.turnouc AS Turno, aulas.num_presencas AS Presencas, aulas.semana AS Semana,aulas.dia || '/' || aulas.mes || '/' || aulas.ano_civil AS "DATA"
+FROM ei_sad_proj_gisem.v_turnos t JOIN ei_sad_proj_gisem.v_aulas_semana aulas ON (t.id = aulas.turno_id)
+WHERE UPPER(nomeuc) like 'SISTEMAS DE % DECIS%O'
+ORDER BY aulas.ano_civil, aulas.mes, aulas.dia;
+
 
 ---------------------------------------
 
