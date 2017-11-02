@@ -151,6 +151,8 @@ GROUP BY departamento, nomeuc
 ORDER BY 1;
 
 --  2.6
+
+--SEM WITH
 SELECT dia || '/' || mes || '/' || ano AS "DATA"
 FROM (SELECT aulas.dia AS dia, aulas.mes AS mes,
                         aulas.ano_civil AS ano,
@@ -167,17 +169,22 @@ WHERE
                     GROUP BY dia, mes, ano_civil) )<0.25
 ORDER BY 1;
 
-WITH mediaPresencasTotal (media) AS
-     (SELECT ROUND(AVG(sum(num_presencas)),2)
-                    FROM ei_sad_proj_gisem.v_aulas_semana
-                    GROUP BY dia, mes, ano_civil)
-SELECT dia || '/' || mes || '/' || ano AS "DATA"
-FROM (SELECT aulas.dia AS dia, aulas.mes AS mes,
-                        aulas.ano_civil AS ano,
-                        sum(num_presencas) AS presencas
-            FROM ei_sad_proj_gisem.v_aulas_semana aulas
-            GROUP BY aulas.dia, aulas.mes, aulas.ano_civil)
+--COM WITH
+
+WITH mediaPresencasTotal (media) AS -- Media total das presenças
+         (SELECT ROUND(AVG(sum(num_presencas)),2)
+                        FROM ei_sad_proj_gisem.v_aulas_semana
+                        GROUP BY dia, mes, ano_civil),
+    somaPresencasDia (dia,mes,ano,presencas) AS --Soma das presenças por dia
+        (SELECT aulas.dia AS dia, aulas.mes AS mes,
+            aulas.ano_civil AS ano,
+            sum(num_presencas) AS presencas
+        FROM ei_sad_proj_gisem.v_aulas_semana aulas
+        GROUP BY aulas.dia, aulas.mes, aulas.ano_civil)
+SELECT dia || '/' || mes || '/' || ano AS "DATA", presencas
+FROM somaPresencasDia
 WHERE 
-                    (presencas / (SELECT media FROM mediaPresencasTotal) )> 1.75
-                    OR
-                    (presencas / (SELECT media FROM mediaPresencasTotal) )<0.25;
+    (presencas / (SELECT media FROM mediaPresencasTotal) )> 1.35
+    OR
+    (presencas / (SELECT media FROM mediaPresencasTotal) )<0.65
+    ORDER BY ano,mes,dia;
