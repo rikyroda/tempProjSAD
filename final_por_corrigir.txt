@@ -83,6 +83,8 @@ FROM ei_sad_proj_gisem.v_turnos t
     JOIN t_ext_curso_ei ce ON (ce.uc LIKE t.nomeuc || '%')
 GROUP BY ce.uc, t.tipoturno,ce.area_cientifica;
 
+--		O Is devia de dar 10 no total e dá 20, o dobro
+
 *Output*
 
 UC                                                                                                   Area Cient Tipo  Total de Turnos
