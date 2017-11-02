@@ -48,6 +48,26 @@ ORDER BY 1;
          2 TP                     335                  434
          3 PL                      32                  180
          3 T                      619                  619
+         
+         
+         OU
+         
+SELECT anoUc AS "Ano da UC", tipoTurno AS "Tipo de Turno", MIN(numEstudantes) AS "Minimo de Estudantes", MAX(numEstudantes) AS "Maximo de Estudantes"
+FROM (SELECT t.anouc as anoUc, t.turnouc as turnouc, t.tipoturno as tipoturno, t.nomeuc ,count(*) AS numEstudantes
+        FROM ei_sad_proj_gisem.v_turnos t
+            JOIN ei_sad_proj_gisem.v_turno_user tu ON (t.id = tu.turno_id)
+        GROUP BY t.anouc, t.turnouc, t.nomeuc, t.tipoturno)
+GROUP BY anoUc, tipoTurno
+ORDER BY 1;
+
+ Ano da UC Tipo  Minimo de Estudantes Maximo de Estudantes
+---------- ----- -------------------- --------------------
+         1 PL                      16                   57
+         1 TP                      33                  148
+         2 PL                      20                   55
+         2 TP                      46                  121
+         3 PL                      11                   49
+         3 T                       39                  148
 
 
 --Q1.4: Total de turnos, por tipo, nas unidades curriculares de cada área científica

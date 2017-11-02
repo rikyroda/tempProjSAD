@@ -27,7 +27,6 @@ FROM ei_sad_proj_gisem.v_turnos t
 	JOIN t_ext_curso_ei ce ON (ce.uc LIKE t.nomeuc || '%')
 GROUP BY ce.uc, t.tipoturno,ce.area_cientifica;
 
-
 ---------------------------------------
 
 --  1.1
@@ -45,10 +44,13 @@ WHERE t.uc_id = 229
 GROUP BY t.id, t.turnouc;
 
 --  1.3
-SELECT t.anouc, t.tipoturno, count(*)
-FROM ei_sad_proj_gisem.v_turnos t
-	JOIN ei_sad_proj_gisem.v_turno_user tu ON (t.id = tu.turno_id)
-GROUP BY t.anouc, t.tipoturno;
+SELECT anoUc AS "Ano da UC", tipoTurno AS "Tipo de Turno", MIN(numEstudantes) AS "Minimo de Estudantes", MAX(numEstudantes) AS "Maximo de Estudantes"
+FROM (SELECT t.anouc AS anoUc, t.tipoturno AS tipoTurno , t.turnouc AS turnoUc, count(*) AS numEstudantes
+        FROM ei_sad_proj_gisem.v_turnos t
+            JOIN ei_sad_proj_gisem.v_turno_user tu ON (t.id = tu.turno_id)
+        GROUP BY t.anouc, t.turnouc, t.tipoturno)
+GROUP BY anoUc, tipoTurno
+ORDER BY 1;
 
 SELECT t.anouc AS anoUc, t.tipoturno AS tipoTurno , t.turnouc AS turnoUc, count(*) AS numEstudantes
 FROM ei_sad_proj_gisem.v_turnos t
