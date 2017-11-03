@@ -1,13 +1,4 @@
-CREATE OR REPLACE PACKAGE pck_extract IS
-   PROCEDURE main (p_initialize BOOLEAN);
-   PROCEDURE read_file(p_dir VARCHAR2, p_file_name VARCHAR2);
-END pck_extract;
-
-/
-
-
-create or replace
-PACKAGE BODY pck_extract IS
+create or replace PACKAGE BODY pck_extract IS
 
    e_extraction EXCEPTION;
 
@@ -83,7 +74,7 @@ PACKAGE BODY pck_extract IS
          pck_log.write_uncomplete_task_msg;
             RAISE e_extraction;
       END;
-      
+
        v_source_table:='ei_sad_proj_gisem.v_ucs';
       INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
        v_source_table:='ei_sad_proj_gisem.v_turno_user';
@@ -110,7 +101,7 @@ PACKAGE BODY pck_extract IS
       INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
        v_source_table:='ei_sad_proj_gisem.v_aulas';
       INSERT INTO t_info_extractions (last_timestamp,source_table_name) VALUES (NULL,v_source_table);
-      
+
       pck_log.write_log('    Done!');
    EXCEPTION
       WHEN OTHERS THEN
@@ -162,7 +153,10 @@ PACKAGE BODY pck_extract IS
             v_sql := 'INSERT INTO '|| p_DSA_table ||'('||p_attributes_dest||') SELECT '|| p_attributes_src||' FROM '|| p_source_table || ' WHERE src_last_changed<= :1 OR src_last_changed IS null'; 
             pck_log.write_log(v_sql);
             EXECUTE IMMEDIATE v_sql USING v_end_date;
-
+            
+            IF v_end_date IS NULL THEN
+                v_end_date := '90.02.17';
+            END IF;
             -- UPDATE THE t_info_extractions TABLE
             -- SOMETHING IS MISSING
             v_sql:='UPDATE t_info_extractions SET last_timestamp = :1 '||
@@ -174,7 +168,7 @@ PACKAGE BODY pck_extract IS
          --   |  OTHER EXTRACTIONS AFTER THE FIRST  |
          --    -------------------------------------
             -- FIND THE DATE OF CHANGE OF THE MOST RECENTLY CHANGED RECORD IN THE SOURCE TABLE
-             v_sql:='SELECT MAX(src_last_changed) FROM '|| p_source_table || 'WHERE src_last_changed>=:1';
+             v_sql:='SELECT MAX(src_last_changed) FROM '|| p_source_table || ' WHERE src_last_changed>=:1';
              pck_log.write_log(v_sql);
 
             EXECUTE IMMEDIATE v_sql INTO v_end_date USING v_start_date;
@@ -318,7 +312,7 @@ PACKAGE BODY pck_extract IS
     table_extract('ei_sad_proj_gisem.v_presencas','t_data_presencas','id,aula_semana_id,user_id,presente,src_last_changed','id,aula_semana_id,user_id,presente,src_last_changed');
     table_extract('ei_sad_proj_gisem.v_aulas_semana','t_data_aulas_semana','id,semana,diasemana,horainicio,horafim,sala,dia,mes,ano_civil,turno_id,prof_id,marcou_presenca,num_presencas,aula_cancelada,src_last_changed','id,semana,diasemana,horainicio,horafim,sala,dia,mes,ano_civil,turno_id,prof_id,marcou_presenca,num_presencas,aula_cancelada,src_last_changed');
      table_extract('ei_sad_proj_gisem.v_aulas','t_data_aulas','id,diasemana,horainicio,horafim,sala,semanas,professor,turno_id,src_last_changed','id,diasemana,horainicio,horafim,sala,semanas,professor,turno_id,src_last_changed');
-     
+
      --  table_extract_non_incremental('view_categorias@dblink_sadsb', 't_data_categories', 'src_id,src_name', 'id,name');
 
       -- SOMETHING IS MISSING: maybe... a file extraction
