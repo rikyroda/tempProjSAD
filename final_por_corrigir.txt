@@ -55,62 +55,66 @@ ORDER BY 1;
 
 
 --Q1.4: Total de turnos, por tipo, nas unidades curriculares de cada área científica
+WITH cursoEI AS
+    (SELECT DISTINCT uc, area_cientifica FROM  t_ext_curso_ei)
 SELECT ce.uc AS UC, ce.area_cientifica AS "Area Cientifica", t.tipoturno AS "Tipo de Turno", count(*) AS "Total de Turnos"
 FROM ei_sad_proj_gisem.v_turnos t
-    JOIN t_ext_curso_ei ce ON (ce.uc LIKE t.nomeuc || '%')
-GROUP BY ce.uc, t.tipoturno,ce.area_cientifica;
+    JOIN cursoEI ce ON (ce.uc LIKE t.nomeuc || '%')
+GROUP BY ce.uc, t.tipoturno,ce.area_cientifica
+ORDER BY 1;
 
---		O Is devia de dar 10 no total e dá 20, o dobro
 
 *Output*
 
 UC                                                                                                   Area Cient Tipo  Total de Turnos
 ---------------------------------------------------------------------------------------------------- ---------- ----- ---------------
-Bases de Dados                                                                                       CE         TP                  3
-Segurança de Sistemas                                                                                EI-TIC     T                   1
-Sistemas Computacionais                                                                              CE         TP                  4
-Redes de Computadores                                                                                CE         TP                  3
-Integração de Sistemas                                                                               EI-SI      PL                 16
-Desenvolvimento de Aplicações Empresariais                                                           EI-SI      T                   1
-Centros de Processamento de Dados                                                                    EI-TIC     PL                  3
+Algoritmos e Estruturas de Dados I                                                                   EI-SI      PL                 12
 Algoritmos e Estruturas de Dados I                                                                   EI-SI      TP                  3
-Programação Avançada                                                                                 EI-SI      TP                  3
-Desenvolvimento de Aplicações Empresariais                                                           EI-SI      PL                  4
+Análise Matemática                                                                                   CB         TP                  5
+Bases de Dados                                                                                       CE         PL                 10
+Bases de Dados                                                                                       CE         TP                  3
+Centros de Processamento de Dados                                                                    EI-TIC     PL                  3
 Centros de Processamento de Dados                                                                    EI-TIC     T                   1
+Desenvolvimento de Aplicações Distribuídas                                                           EI-TIC     PL                  8
+Desenvolvimento de Aplicações Distribuídas                                                           EI-TIC     T                   2
+Desenvolvimento de Aplicações Empresariais                                                           EI-SI      PL                  4
+Desenvolvimento de Aplicações Empresariais                                                           EI-SI      T                   1
 
 UC                                                                                                   Area Cient Tipo  Total de Turnos
 ---------------------------------------------------------------------------------------------------- ---------- ----- ---------------
 Física Aplicada                                                                                      CB         PL                 15
-Algoritmos e Estruturas de Dados I                                                                   EI-SI      PL                 12
+Física Aplicada                                                                                      CB         TP                  6
+Integração de Sistemas                                                                               EI-SI      PL                  8
+Integração de Sistemas                                                                               EI-SI      T                   2
 Programação Avançada                                                                                 EI-SI      PL                 10
-Tópicos Avançados de Engenharia de Software                                                          EI-SI      T                   1
-Segurança de Sistemas                                                                                EI-TIC     PL                  3
-Álgebra Linear                                                                                       CB         TP                  7
-Bases de Dados                                                                                       CE         PL                 10
-Tópicos Avançados de Redes                                                                           EI-TIC     T                   1
+Programação Avançada                                                                                 EI-SI      TP                  3
+Programação I                                                                                        CE         PL                 13
 Programação I                                                                                        CE         TP                  4
+Programação II                                                                                       CE         PL                 13
 Programação II                                                                                       CE         TP                  4
-Análise Matemática                                                                                   CB         TP                  5
+Redes de Computadores                                                                                CE         PL                  9
 
 UC                                                                                                   Area Cient Tipo  Total de Turnos
 ---------------------------------------------------------------------------------------------------- ---------- ----- ---------------
-Redes de Computadores                                                                                CE         PL                  9
-Desenvolvimento de Aplicações Distribuídas                                                           EI-TIC     PL                 16
-Tópicos Avançados de Engenharia de Software                                                          EI-SI      PL                  4
+Redes de Computadores                                                                                CE         TP                  3
+Segurança de Sistemas                                                                                EI-TIC     PL                  3
+Segurança de Sistemas                                                                                EI-TIC     T                   1
+Sistemas Computacionais                                                                              CE         PL                 12
+Sistemas Computacionais                                                                              CE         TP                  4
+Sistemas Gráficos e Interação                                                                        EI-TIC     PL                  9
+Sistemas Gráficos e Interação                                                                        EI-TIC     TP                  3
 Sistemas de Apoio à Decisão                                                                          EI-SI      PL                  4
 Sistemas de Apoio à Decisão                                                                          EI-SI      T                   1
-Tópicos Avançados de Redes                                                                           EI-TIC     PL                  3
-Programação II                                                                                       CE         PL                 13
-Sistemas Gráficos e Interação                                                                        EI-TIC     PL                  9
-Desenvolvimento de Aplicações Distribuídas                                                           EI-TIC     T                   4
-Sistemas Computacionais                                                                              CE         PL                 12
-Sistemas Gráficos e Interação                                                                        EI-TIC     TP                  3
+Tópicos Avançados de Engenharia de Software                                                          EI-SI      PL                  4
+Tópicos Avançados de Engenharia de Software                                                          EI-SI      T                   1
 
 UC                                                                                                   Area Cient Tipo  Total de Turnos
 ---------------------------------------------------------------------------------------------------- ---------- ----- ---------------
-Integração de Sistemas                                                                               EI-SI      T                   4
-Física Aplicada                                                                                      CB         TP                  6
-Programação I                                                                                        CE         PL                 13
+Tópicos Avançados de Redes                                                                           EI-TIC     PL                  3
+Tópicos Avançados de Redes                                                                           EI-TIC     T                   1
+Álgebra Linear                                                                                       CB         TP                  7
+
+Nota: Nesta query fizemos uma subquery usando WITH e DISTINCT para filtrar as UCs da tabela externa do Curso_EI que estavam repetidas.
 
 --Q.2.1: Nº de Estudantes Inscritos presentes nas Aulas por Turno , em SAD
 
@@ -407,7 +411,6 @@ WHERE
     (presencas / (SELECT media FROM mediaPresencasTotal) )<0.65
     ORDER BY ano,mes,dia;
 
-
 *Output*
 
 DATA                                                                                                                        PRESENCAS
@@ -420,3 +423,6 @@ DATA                                                                            
 1/12/2016                                                                                                                          86
 8/12/2016                                                                                                                          27
 
+Explicação: 
+Para obter os picos de presenças nas aulas comparamos o numero de presenças por dia com a média do número de presenças. 
+Todos os valores que são 35% superiores ou inferiores ao da média será considerado um pico.
