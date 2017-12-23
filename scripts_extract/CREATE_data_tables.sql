@@ -201,7 +201,7 @@ CREATE TABLE t_data_presencas(
 	USER_ID                   NUMBER(10),   
 	PRESENTE                  NUMBER(1),    
 	SRC_LAST_CHANGED          TIMESTAMP(6),
-	rejected_by_screen CHAR	DEFAULT(0) 
+	rejected_by_screen 		  CHAR	DEFAULT(0) 
 
 );
 CREATE TABLE t_data_aulas_semana(
@@ -237,14 +237,14 @@ CREATE TABLE t_data_aulas(
 );
 
 CREATE TABLE t_data_area_cientifica_new(
-	name        VARCHAR2(50),
+	name        VARCHAR2(80),
     sigla       VARCHAR2(10)
 );
 
 CREATE TABLE t_data_area_cientifica_old AS SELECT * FROM t_data_area_cientifica_new;
 
 CREATE TABLE t_data_departamentos_new(
-	name        VARCHAR2(50),
+	name        VARCHAR2(80),
     sigla       VARCHAR2(10)
 );
 
@@ -253,7 +253,8 @@ CREATE TABLE t_data_departamentos_old AS SELECT * FROM t_data_departamentos_new;
 CREATE TABLE t_data_curso_ei_new(
 	uc          VARCHAR2(100),
     area_cientifica     VARCHAR2(10),
-    departamento        VARCHAR2(10)
+    departamento        VARCHAR2(10),
+    rejected_by_screen  CHAR DEFAULT(0)
 );
 
 CREATE TABLE t_data_curso_ei_old AS SELECT * FROM t_data_curso_ei_new;

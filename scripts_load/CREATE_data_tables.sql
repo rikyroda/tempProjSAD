@@ -1,50 +1,57 @@
-CREATE TABLE t_dim_store(
-	store_key		NUMBER(5),
-	store_natural_key	CHAR(6),
-	store_name		VARCHAR2(40),
-	store_full_address	VARCHAR2(250),
-	store_location		VARCHAR2(40),
-	store_district		VARCHAR2(30),
-	store_zip_code		CHAR(8),
-	store_main_phone	CHAR(9),
-	store_main_phone_old	CHAR(9),		-- to store previous telephone value
-	store_fax		CHAR(9),
-	store_fax_old		CHAR(9),		-- to store previous fax value
-	store_manager_name	VARCHAR2(100),
-	store_manager_since	DATE,
-	store_state		VARCHAR2(8),
-	is_expired_version	VARCHAR2(3),	-- {'NO'=current version; 'YES'=expired version}
-	CONSTRAINT pk_tdimstore_storeKey PRIMARY KEY (store_key)
+CREATE TABLE t_dim_users(
+	user_id		NUMBER(10),
+	user_natural_key	NUMBER(10),
+	turma_id		NUMBER(10),
+	temporario	NUMBER(1),
+	hashorariocompleto		NUMBER(1),
+	ramo		VARCHAR2(10),
+	regime		VARCHAR2(10),
+	CONSTRAINT pk_tdimusers_userKey PRIMARY KEY (user_id)
+);
+
+CREATE TABLE t_dim_turnos(
+	turno_id		NUMBER(10),
+	turno_natural_key	NUMBER(10),
+	anolectivo		NUMBER(11),
+	regimeuc	VARCHAR2(10),
+	turnouc		VARCHAR2(5),
+	max_alunos		NUMBER(11),
+	tipoturno		VARCHAR2(5),
+	uc_id	NUMBER(10),
+	CONSTRAINT pk_tdimturnos_turnoKey PRIMARY KEY (turno_id)
 );
 
 
-CREATE TABLE t_dim_product(
-	product_key		NUMBER(12),
-	product_natural_Key	NUMBER(10),
-	product_name		VARCHAR2(30),
-	product_brand		VARCHAR2(30),
-	product_category	VARCHAR2(20),
-	product_size_package	VARCHAR2(20),
-	product_type_package	VARCHAR2(30),
-	product_diet_type	VARCHAR2(15),
-	product_liquid_weight	NUMBER(8,2),
-	is_expired_version	VARCHAR2(3),	-- {'NO'=current version; 'YES'=expired version}
-	CONSTRAINT pk_tdimproduct_productKey PRIMARY KEY (product_key)
+CREATE TABLE t_dim_aulas(
+	aula_id		NUMBER(10),
+	aula_natural_key	NUMBER(10),
+	semana		VARCHAR2(4),
+	diasemana	NUMBER(11),
+	horainicio		VARCHAR2(10),
+	horafim		VARCHAR2(10),
+	sala		VARCHAR2(50),
+	dia	NUMBER(11),
+	mes	NUMBER(11),
+	ano_civil	NUMBER(11),
+	turno_id	NUMBER(10),
+	num_presencas	NUMBER(11),
+	CONSTRAINT pk_tdimturnos_turnoKey PRIMARY KEY (turno_id)
 );
 
-
-CREATE TABLE t_dim_promotion(
-	promo_key		NUMBER(12),
-	promo_natural_Key	NUMBER(10),
-	promo_name		VARCHAR2(100),
-	promo_red_Price		NUMBER(3,2),
-	promo_advertise		VARCHAR2(3),
-	promo_board		VARCHAR2(3),
-	promo_start_date	DATE,
-	promo_end_date		DATE,
-	CONSTRAINT pk_tDimPromotion_promoKey PRIMARY KEY (promo_key)
+CREATE TABLE t_dim_ucs(
+	uc_id		NUMBER(10),
+	uc_natural_key	NUMBER(10),
+	nomeuc		VARCHAR2(50),
+	abrevuc	VARCHAR2(10),
+	anouc		NUMBER(11),
+	semestreuc		NUMBER(11),
+	ramouc		VARCHAR2(30),
+	area_cientifica_sigla	VARCHAR2(10),
+	area_cientifica	VARCHAR2(80),
+	departamento	VARCHAR2(50),
+	departamento_sigla	VARCHAR2(10),
+	CONSTRAINT pk_tdimucs_ucKey PRIMARY KEY (uc_id)
 );
-
 
 CREATE TABLE t_dim_date(
 	date_key		NUMBER(6),
@@ -64,7 +71,6 @@ CREATE TABLE t_dim_date(
 	CONSTRAINT pk_tDimDate_dateKey PRIMARY KEY (date_key)
 );
 
-
 CREATE TABLE t_dim_time(
 	time_key		NUMBER(6),
 	time_full_time		CHAR(8),
@@ -76,22 +82,40 @@ CREATE TABLE t_dim_time(
 	CONSTRAINT pk_tDimTime_timeKey PRIMARY KEY (time_key)
 );
 
-
-CREATE TABLE t_fact_lineofsale(
-	product_key		NUMBER(12),
-	store_key		NUMBER(5),
-	date_key		NUMBER(6),
+CREATE TABLE t_fact_presencas(
+	--aula_user_key		NUMBER(10),
 	time_key		NUMBER(6),
-	promo_key		NUMBER(12),
-	sale_id_dd		NUMBER(10),
-	sold_quantity		NUMBER(5,2),
-	ammount_sold		NUMBER(7,2),
-	CONSTRAINT pk_tFactlineofsale_pk 		PRIMARY KEY (time_key, sale_id_dd),
-	CONSTRAINT fk_tFactlineofsale_productkey 	FOREIGN KEY (product_key) REFERENCES t_dim_product(product_key),
-	CONSTRAINT fk_tFactlineofsale_storekey 	FOREIGN KEY (store_key) REFERENCES t_dim_store(store_key),
-	CONSTRAINT fk_tFactlineofsale_timekey 	FOREIGN KEY (time_key) REFERENCES t_dim_time(time_key),
-	CONSTRAINT fk_tFactlineofsale_datekey 	FOREIGN KEY (date_key) REFERENCES t_dim_date(date_key),
-	CONSTRAINT fk_tFactlineofsale_promokey 	FOREIGN KEY (promo_key) REFERENCES t_dim_promotion(promo_key)
+	date_key		NUMBER(6),
+	user_id		NUMBER(10),
+	uc_id		NUMBER(10),
+	turno_id		NUMBER(10),
+	aula_id		NUMBER(10),
+	presente		NUMBER(1),
+	CONSTRAINT pk_tFactPresencas_pk 		PRIMARY KEY (aula_id, user_id),
+	CONSTRAINT fk_tFactPresencas_aula_id	FOREIGN KEY (aula_id) REFERENCES t_dim_aulas(aula_id),
+	CONSTRAINT fk_tFactPresencas_user_id 	FOREIGN KEY (user_id) REFERENCES t_dim_users(user_id),
+	CONSTRAINT fk_tFactPresencas_timekey 	FOREIGN KEY (time_key) REFERENCES t_dim_time(time_key),
+	CONSTRAINT fk_tFactPresencas_datekey 	FOREIGN KEY (date_key) REFERENCES t_dim_date(date_key),
+	CONSTRAINT fk_tFactPresencas_turno_id 	FOREIGN KEY (turno_id) REFERENCES t_dim_turnos(turno_id),
+	CONSTRAINT fk_tFactPresencas_uc_id 		FOREIGN KEY (uc_id) REFERENCES t_dim_ucs(uc_id)
+);
+
+CREATE TABLE t_fact_faltas(
+	--aula_user_key		NUMBER(10),
+	time_key		NUMBER(6),
+	date_key		NUMBER(6),
+	user_id		NUMBER(10),
+	uc_id		NUMBER(10),
+	turno_id		NUMBER(10),
+	aula_id		NUMBER(10),
+	faltou		NUMBER(1),
+	CONSTRAINT pk_tFactFaltas_pk 		PRIMARY KEY (aula_id, user_id),
+	CONSTRAINT fk_tFactFaltas_aula_id	FOREIGN KEY (aula_id) REFERENCES t_dim_aulas(aula_id),
+	CONSTRAINT fk_tFactFaltas_user_id 	FOREIGN KEY (user_id) REFERENCES t_dim_users(user_id),
+	CONSTRAINT fk_tFactFaltas_timekey 	FOREIGN KEY (time_key) REFERENCES t_dim_time(time_key),
+	CONSTRAINT fk_tFactFaltas_datekey 	FOREIGN KEY (date_key) REFERENCES t_dim_date(date_key),
+	CONSTRAINT fk_tFactFaltas_turno_id 	FOREIGN KEY (turno_id) REFERENCES t_dim_turnos(turno_id),
+	CONSTRAINT fk_tFactFaltas_uc_id 	FOREIGN KEY (uc_id) REFERENCES t_dim_ucs(uc_id)
 );
 
 

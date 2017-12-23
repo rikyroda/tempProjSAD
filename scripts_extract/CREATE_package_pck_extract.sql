@@ -1,3 +1,10 @@
+create or replace PACKAGE pck_extract IS
+   PROCEDURE main (p_initialize BOOLEAN);
+   PROCEDURE read_file(p_dir VARCHAR2, p_file_name VARCHAR2);
+END pck_extract;
+
+/
+
 create or replace PACKAGE BODY pck_extract IS
 
    e_extraction EXCEPTION;

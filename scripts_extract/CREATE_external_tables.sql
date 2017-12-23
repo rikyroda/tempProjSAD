@@ -1,5 +1,5 @@
 CREATE TABLE t_ext_area_cientifica(
-    name        VARCHAR2(50),
+    name        VARCHAR2(80),
     sigla       VARCHAR2(10)
 )
 ORGANIZATION EXTERNAL
@@ -15,7 +15,7 @@ ORGANIZATION EXTERNAL
         SKIP 1
         FIELDS TERMINATED BY ";" OPTIONALLY ENCLOSED BY '"' MISSING FIELD VALUES ARE NULL
         (
-            name        CHAR(50),
+            name        CHAR(80),
             sigla       CHAR(10)
         )
     )

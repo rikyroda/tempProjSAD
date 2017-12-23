@@ -46,15 +46,25 @@ FROM numEstudantesTurno
 GROUP BY ano, tipoTurno
 ORDER BY 1;
 
+-- correcção
+WITH countEstudantesTurnos(turno_id, num) AS
+    (SELECT turno_id ,COUNT(*)
+    FROM ei_sad_proj_gisem.v_turno_user
+    GROUP BY turno_id)
+    SELECT t.anouc, t.tipoturno, min(estTurnos.num), max(estTurnos.num)
+    FROM ei_sad_proj_gisem.v_turnos t JOIN countEstudantesTurnos estTurnos ON (estTurnos.turno_id = t.id)
+    GROUP BY t.anouc,t.tipoturno
+    ORDER BY ANOUC;
+
 
  Ano da UC Tipo  Minimo de Estudantes Maximo de Estudantes
 ---------- ----- -------------------- --------------------
-         1 PL                      16                   57
-         1 TP                      33                  148
-         2 PL                      20                   55
-         2 TP                      46                  121
-         3 PL                      11                   49
-         3 T                       39                  148
+         1 PL                      16                   57  16 - 36
+         1 TP                      33                  148  33 - 110
+         2 PL                      20                   55  17-31
+         2 TP                      46                  121  46-121
+         3 PL                      11                   49  11-32
+         3 T                       39                  148  39-86
 
 
 --Q1.4: Total de turnos, por tipo, nas unidades curriculares de cada área científica
@@ -412,6 +422,15 @@ WHERE
     OR
     (presencas / (SELECT media FROM mediaPresencasTotal) )<0.65
     ORDER BY ano,mes,dia;
+
+
+--correcao
+SELECT aulas.dia || '/' || aulas.mes || '/' || aulas.ano_civil AS "DATA",
+            sum(aulas.num_presencas) AS presencas
+        FROM ei_sad_proj_gisem.v_aulas_semana aulas
+        GROUP BY aulas.dia, aulas.mes, aulas.ano_civil
+        ORDER BY aulas.dia, aulas.mes, aulas.ano_civil;
+    
 
 *Output*
 

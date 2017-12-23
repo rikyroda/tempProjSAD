@@ -24,7 +24,7 @@ CREATE TABLE t_tel_iteration(
 
 CREATE TABLE t_tel_source(
 	source_key		     NUMBER(5),
-	source_file_name     VARCHAR2(20),
+	source_file_name     VARCHAR2(50),
 	source_database_name VARCHAR2(20),
 	source_host_ip       VARCHAR2(15),
 	source_host_os       VARCHAR2(100),

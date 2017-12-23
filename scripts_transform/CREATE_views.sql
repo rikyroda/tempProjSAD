@@ -12,10 +12,20 @@ WHERE iteration_key = (SELECT MAX(iteration_key)
 ORDER BY "Screen";
 
 
+
 -- Shows where are the data quality problems
 CREATE OR REPLACE VIEW v_data_with_problems AS
-SELECT 
-   'Produtos' AS "Tipo", 'ID: '||p.id||'; Nome: '||p.name AS "Info",
+SELECT
+   'UC' AS "Tipo", 'UC: '||c.uc||'; Area Cientifica: '||c.area_cientifica ||'; Departamento: ' || c.departamento AS "Info",
    v."Problem"
-FROM t_data_products p, v_last_iteration_info v
+FROM t_data_curso_ei_new c, v_last_iteration_info v
+WHERE c.rowid = v.row_with_data_problems;
+
+
+-- Shows where are the data quality problems
+CREATE OR REPLACE VIEW v_presencas_user_notenrolled AS
+SELECT
+   'PRESENCA' AS "Tipo", 'ID: '||p.id||'; Aula ID: '||p.aula_semana_id ||'; User ID: ' || p.user_id AS "Info",
+   v."Problem"
+FROM t_data_presencas p, v_last_iteration_info v
 WHERE p.rowid = v.row_with_data_problems;
