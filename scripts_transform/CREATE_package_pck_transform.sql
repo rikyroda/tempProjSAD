@@ -372,8 +372,9 @@ END;
    BEGIN
       pck_log.write_log('  Transforming data ["TRANSFORM_FALTAS"]');
 
-      INSERT INTO t_clean_faltas(id,aula_semana_id,user_id,turno_id,faltou)
-      SELECT p.id, p.aula_semana_id,p.user_id,turno.id,p.presente
+      INSERT INTO t_clean_faltas(id,aula_semana_id,user_id,turno_id,faltou,aula_date)
+      SELECT p.id, p.aula_semana_id,p.user_id,turno.id,p.presente,
+        TO_DATE(au.dia || '-' ||au.mes ||'-'||au.ano_civil, 'dd-mm-yyyy')
       FROM t_data_presencas p
       JOIN t_data_aulas_semana au ON (p.AULA_SEMANA_ID = au.id)
       JOIN t_data_turnos turno ON ( au.turno_id = turno.id)
